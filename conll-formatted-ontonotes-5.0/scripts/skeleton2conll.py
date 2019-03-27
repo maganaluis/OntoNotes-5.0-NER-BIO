@@ -66,10 +66,10 @@ def warning(warning_string, verbosity=0):
 --------------------------------------------------------------------------------
                                       WARNING
 --------------------------------------------------------------------------------
-%s
+{warn}
 --------------------------------------------------------------------------------
 
-""" % (warning_string))
+""".format(warn=warning_string))
 
 
 
@@ -154,7 +154,7 @@ class lemma:
     self.lemma = lemma
     self.coarse_sense = coarse_sense
     self.leaf_id = leaf_id
-    
+
     self.id = "%s@%s" % (self.lemma, self.leaf_id)
 
   sql_table_name = "lemma"
@@ -166,8 +166,8 @@ class lemma:
                       "  unvocalized_string: " + self.unvocalized_string,
                       "  vocalized_string: " + self.vocalized_string,
                       "  gloss: " + self.gloss,
-                      "  index: %s" % self.index,
-                      "  offset: %s" % self.offset])
+                      "  index: {0}".format(self.index),
+                      "  offset: {0}".format(self.offset)])
 
   def __str__(self):
     tr = ["INPUT STRING:%s" % self.input_string,
@@ -272,7 +272,7 @@ insert into lemma
     data = [(self.id, self.input_string, self.b_transliteration, self.comment, self.index,
              self.offset, self.unvocalized_string, self.vocalized_string, self.vocalized_input,
              self.pos, self.gloss, self.lemma, self.coarse_sense, self.leaf_id)]
-    
+
     cursor.executemany("%s" % (self.__class__.sql_insert_statement), data)
 
 
@@ -389,7 +389,7 @@ def parse_sexpr(s):
                 if parens == 0:
                     try:
                         x = parse_sexpr("".join(cur))
-                    except InvalidSexprException, e:
+                    except InvalidSexprException as e:
                         raise InvalidSexprException("Parent: %s" % s, e)
 
                     if x:
@@ -843,8 +843,8 @@ def pretty_print_table(rows, separator=None, out_file=None):
 
     if(out_file == None):
         for row in r_c_matrix:
-            print " ".join(row).strip()
-        print
+            print(" ".join(row).strip())
+        print("\n")
 
     elif(out_file == "-"):
         rows=[]
@@ -927,7 +927,7 @@ def start(input_fname, conll_fname, output_fname, encoding, changes):
     if re.search('data%s+arabic%s+annotations' % (os.sep, os.sep), input_fname):
       is_arabic = True
 
-      
+
 
 
     if is_arabic is True:
@@ -1052,7 +1052,7 @@ def start(input_fname, conll_fname, output_fname, encoding, changes):
            try:
              lemma_lemma, coarse_sense = lemma_lemma.split("_")
            except ValueError:
-             raise 
+             raise
 
          lemma_object = lemma(list_of_input_strings[i],
                               list_of_b_transliterations[i],
@@ -1064,7 +1064,7 @@ def start(input_fname, conll_fname, output_fname, encoding, changes):
                               list_of_vocalized_inputs[i],
                               list_of_pos[i],
                               list_of_glosses[i],
-                              lemma_lemma, 
+                              lemma_lemma,
                               coarse_sense,
                               i)
 
@@ -1102,10 +1102,10 @@ def start(input_fname, conll_fname, output_fname, encoding, changes):
 
                     if DEBUG:
                       if columns[LEMMA_COLUMN] == a_list_of_lemmas[w].lemma.strip():
-                        print "found the same lemma"
+                        print("found the same lemma")
                       else:
                         raise Exception("Something is wrong: %s %s %s" % (columns[LEMMA_COLUMN], a_list_of_lemmas[w].lemma.strip(), " ".join(columns)))
-                      
+
                     columns[LEMMA_COLUMN] = a_list_of_lemmas[w].lemma.strip()
                 else:
                     columns[WORD_COLUMN] = w_list[i][c]
@@ -1117,7 +1117,7 @@ def start(input_fname, conll_fname, output_fname, encoding, changes):
             pretty_print_table_string = pretty_print_table(rows, out_file="-")
 
             if output_fname == "-":
-                print pretty_print_table_string
+                print(pretty_print_table_string)
             else:
                 with codecs.open(output_fname, "a", encoding) as outf:
                     outf.write("%s\n" % (pretty_print_table_string))
@@ -1127,7 +1127,7 @@ def start(input_fname, conll_fname, output_fname, encoding, changes):
 
         elif(line.startswith("#")):
             if output_fname == "-":
-                print line.strip()
+                print(line.strip())
             else:
                 with codecs.open(output_fname, "a", encoding) as outf:
                     outf.write("%s\n" % (line.strip()))
@@ -1151,26 +1151,26 @@ if __name__ == "__main__":
 
     if len(sys.argv[1:]) == 2 and sys.argv[1] in ["--help", "-h"] and sys.argv[2] in transformations:
         print
-        print "  ", transformations[sys.argv[2]].__doc__
+        print("  ", transformations[sys.argv[2]].__doc__)
     elif not sys.argv[1:] or "--help" in sys.argv[1:] or "-h" in sys.argv[1:]:
         print
-        print "-"*120
-        print "Usage:  python skeleton2conll.py <ontonotes-parse-file> <input-skel-file> <conll-output-file> [transformations] ..."
-        print "\nAllowed transforms:"
+        print("-"*120)
+        print("Usage:  python skeleton2conll.py <ontonotes-parse-file> <input-skel-file> <conll-output-file> [transformations] ...")
+        print("\nAllowed transforms:")
 
         max_key_len = max(len(t) for t in transformations) + 1 # +1 for colon
 
         for key in transformations:
-            print "   %s %s" %(("%s:"%key).rjust(max_key_len),
-                               transformations[key].__doc__.split("\n")[0])
+            print("   %s %s" %(("%s:"%key).rjust(max_key_len),
+                               transformations[key].__doc__.split("\n")[0]))
 
-        print "   %s %s" % ("--text:".rjust(max_key_len),
-                            "Produce text output instead of parse trees")
-        print
-        print
-        print "Example:"
-        print "python skeleton2conll.py <ontonotes-release-directory>/data/.../bc/cnn/00/cnn_0000.parse conll-2011/dev/data/english/annotations/bc/cnn/00/cnn_0000.v0_gold_skel conll-2011/dev/data/english/annotations/bc/cnn/00/cnn_0000.v0_gold_conll -edited --text"
-        print "-"*120
+        print("   %s %s" % ("--text:".rjust(max_key_len),
+                            "Produce text output instead of parse trees"))
+        print("\n")
+        print("\n")
+        print("Example:")
+        print("python skeleton2conll.py <ontonotes-release-directory>/data/.../bc/cnn/00/cnn_0000.parse conll-2011/dev/data/english/annotations/bc/cnn/00/cnn_0000.v0_gold_skel conll-2011/dev/data/english/annotations/bc/cnn/00/cnn_0000.v0_gold_conll -edited --text")
+        print("-"*120)
     else:
         input_fname, conll_fname, output_fname, changes = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4:]
         start(input_fname, conll_fname, output_fname, encoding, changes)
