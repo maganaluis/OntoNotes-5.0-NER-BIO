@@ -5,7 +5,7 @@ def generate_collection(tag="train"):
                                                for root, dirs, files in os.walk('./conll-formatted-ontonotes-5.0/data/'+tag))
 
     text =  ""
-    for cur_file in results: 
+    for cur_file in results:
         with open(cur_file, 'r') as f:
             print(cur_file)
             flag = None
@@ -34,7 +34,7 @@ def generate_collection(tag="train"):
                     elif ori_ner.startswith("(") and ori_ner.endswith(")") and len(ori_ner)>2 and flag == None:
                         ner = "B-" + ori_ner[1:-1]
 
-                    text += "\t".join([word, pos, cons, ner]) + '\n'
+                    text += "\t".join([word, pos, ner]) + '\n'
                 else:
                     text += '\n'
             text += '\n'
